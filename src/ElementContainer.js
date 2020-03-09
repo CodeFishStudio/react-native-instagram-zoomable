@@ -68,6 +68,7 @@ export class ElementContainer extends PureComponent {
         super(...arguments);
 
         this._startGesture = this._startGesture.bind(this);
+        this._onGestureRelease = this._onGestureRelease.bind(this);
         this._measureSelected = this._measureSelected.bind(this);
 
         this._initialTouches = [];
@@ -81,15 +82,15 @@ export class ElementContainer extends PureComponent {
 
         return (
             <Animated.View
-        style={[styles.container, style, {
-            opacity: this._opacity
-        }]}
-        ref={node => (this._parent = node)}
-        {...this._gestureHandler.panHandlers}
-    >
-        { children }
-    </Animated.View>
-    );
+                style={[styles.container, style, {
+                    opacity: this._opacity
+                }]}
+                ref={node => (this._parent = node)}
+                {...this._gestureHandler.panHandlers}
+            >
+                { children }
+            </Animated.View>
+        );
     }
 
     _generatePanHandlers = () => {
@@ -130,6 +131,7 @@ export class ElementContainer extends PureComponent {
 
         let selectedMeasurement = await this._measureSelected();
         this._selectedMeasurement = selectedMeasurement;
+
         onGestureStart({
             element: this,
             measurement: selectedMeasurement,
@@ -175,7 +177,7 @@ export class ElementContainer extends PureComponent {
         scaleValue.setValue(newScale);
     };
 
-    _onGestureRelease = (event, gestureState: GestureState) => {
+    async _onGestureRelease(event, gestureState: GestureState) {
         if (this._gestureInProgress !== gestureState.stateID) {
             return;
         }
@@ -193,6 +195,9 @@ export class ElementContainer extends PureComponent {
             x: 0,
             y: 0,
         });
+
+        let selectedMeasurement = await this._measureSelected();
+        this._selectedMeasurement = selectedMeasurement;
 
         // set to initial position and scale
         Animated.parallel([

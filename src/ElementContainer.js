@@ -81,15 +81,15 @@ export class ElementContainer extends PureComponent {
 
         return (
             <Animated.View
-                style={[styles.container, style, {
-                    opacity: this._opacity
-                }]}
-                ref={node => (this._parent = node)}
-                {...this._gestureHandler.panHandlers}
-            >
-                { children }
-            </Animated.View>
-        );
+        style={[styles.container, style, {
+            opacity: this._opacity
+        }]}
+        ref={node => (this._parent = node)}
+        {...this._gestureHandler.panHandlers}
+    >
+        { children }
+    </Animated.View>
+    );
     }
 
     _generatePanHandlers = () => {
@@ -123,7 +123,7 @@ export class ElementContainer extends PureComponent {
         }
 
         this._gestureInProgress = gestureState.stateID;
-        let { gesturePosition, onGestureStart } = this.context;
+        let { gesturePosition, onGestureStart, scaleValue } = this.context;
         let { touches } = event.nativeEvent;
 
         this._initialTouches = touches;
@@ -141,14 +141,12 @@ export class ElementContainer extends PureComponent {
         });
 
         gesturePosition.setOffset({
-            x: 0,
+            x: (selectedMeasurement && selectedMeasurement.x) || 0,
             y: (selectedMeasurement && selectedMeasurement.y) || 0,
         });
 
-        Animated.timing(this._opacity, {
-            toValue: 0,
-            duration: 200,
-        }).start();
+        scaleValue.setValue(1);
+        this._opacity.setValue(0);
     };
 
     _onGestureMove = (event: Event, gestureState: GestureState) => {
@@ -186,33 +184,37 @@ export class ElementContainer extends PureComponent {
         this._initialTouches = [];
 
         let { gesturePosition, scaleValue, onGestureRelease } = this.context;
+        let { dx, dy } = gestureState;
+
+        gesturePosition.x.setValue(((this._selectedMeasurement && this._selectedMeasurement.x) || 0) + dx);
+        gesturePosition.y.setValue(((this._selectedMeasurement && this._selectedMeasurement.y) || 0) + dy);
+
+        gesturePosition.setOffset({
+            x: 0,
+            y: 0,
+        });
 
         // set to initial position and scale
         Animated.parallel([
             Animated.timing(gesturePosition.x, {
-                toValue: 0,
+                toValue: (this._selectedMeasurement && this._selectedMeasurement.x) || 0,
                 duration: RESTORE_ANIMATION_DURATION,
-                easing: Easing.ease,
+                easing: Easing.bezier(0.645, 0.045, 0.355, 1),
                 useNativeDriver: true,
             }),
             Animated.timing(gesturePosition.y, {
-                toValue: 0,
+                toValue: (this._selectedMeasurement && this._selectedMeasurement.y) || 0,
                 duration: RESTORE_ANIMATION_DURATION,
-                easing: Easing.ease,
+                easing: Easing.bezier(0.645, 0.045, 0.355, 1),
                 useNativeDriver: true,
             }),
             Animated.timing(scaleValue, {
                 toValue: 1,
                 duration: RESTORE_ANIMATION_DURATION,
-                easing: Easing.ease,
+                easing: Easing.bezier(0.645, 0.045, 0.355, 1),
                 useNativeDriver: true,
             }),
         ]).start(() => {
-            gesturePosition.setOffset({
-                x: 0,
-                y: (this._selectedMeasurement && this._selectedMeasurement.y) || 0,
-            });
-
             this._opacity.setValue(1);
 
             requestAnimationFrame(() => {

@@ -1,6 +1,6 @@
 // @flow
 
-const SCALE_MULTIPLIER = 1.2;
+const SCALE_MULTIPLIER = 1;
 
 export default function getScale(
     currentDistance: number,

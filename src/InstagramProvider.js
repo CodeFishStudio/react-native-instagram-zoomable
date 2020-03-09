@@ -76,6 +76,7 @@ export class InstagramProvider extends PureComponent {
     }
 
     onGestureStart = (selected) => {
+        if(this.props.onStartHandler) { this.props.onStartHandler(); }
         this.setState({
             selected,
             isDragging: true,
@@ -83,6 +84,7 @@ export class InstagramProvider extends PureComponent {
     };
 
     onGestureRelease = () => {
+        if(this.props.onEndHandler) { this.props.onEndHandler(); }
         this.setState({
             isDragging: false
         });

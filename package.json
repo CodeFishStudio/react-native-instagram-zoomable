@@ -1,5 +1,5 @@
 {
-  "name": "@postillon/react-native-instagram-zoomable",
+  "name": "react-native-instagram-zoomable",
   "version": "1.1.0",
   "description": "A component to implement the Instagram Zoom-Draggable-Effect for any component in React-Native",
   "main": "index.js",

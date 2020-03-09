@@ -2,7 +2,7 @@
 
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import ReactNative, { Animated, Easing, PanResponder, StyleSheet, View, ViewPropTypes } from 'react-native';
+import ReactNative, { Animated, Easing, PanResponder, StyleSheet, ViewPropTypes } from 'react-native';
 
 import getDistance from './helpers/getDistance';
 import getScale from './helpers/getScale';
@@ -40,10 +40,13 @@ export class ElementContainer extends PureComponent {
             PropTypes.arrayOf(PropTypes.element),
         ]).isRequired,
 
+        disabled: PropTypes.bool,
+
         style: ViewPropTypes.style,
     };
 
     static defaultProps = {
+        disabled: false,
         style: null,
     };
 
@@ -118,8 +121,7 @@ export class ElementContainer extends PureComponent {
     };
 
     async _startGesture(event: Event, gestureState: GestureState) {
-        // Sometimes gesture start happens two or more times rapidly.
-        if (this._gestureInProgress) {
+        if (this._gestureInProgress || this.props.disabled) {
             return;
         }
 
@@ -154,7 +156,7 @@ export class ElementContainer extends PureComponent {
     _onGestureMove = (event: Event, gestureState: GestureState) => {
         let { touches } = event.nativeEvent;
 
-        if (!this._gestureInProgress) {
+        if (!this._gestureInProgress || this.props.disabled) {
             return;
         }
         if (touches.length < 2) {
@@ -178,7 +180,7 @@ export class ElementContainer extends PureComponent {
     };
 
     async _onGestureRelease(event, gestureState: GestureState) {
-        if (this._gestureInProgress !== gestureState.stateID) {
+        if (this._gestureInProgress !== gestureState.stateID || this.props.disabled) {
             return;
         }
 

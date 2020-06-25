@@ -233,7 +233,7 @@ export class ElementContainer extends PureComponent {
     async _measureSelected() {
         let parentMeasurement = await new Promise((resolve, reject) => {
             try {
-                this._parent._component.measureInWindow((winX, winY, winWidth, winHeight) => {
+                this._parent.measureInWindow((winX, winY, winWidth, winHeight) => {
                     resolve({
                         x: winX,
                         y: winY,

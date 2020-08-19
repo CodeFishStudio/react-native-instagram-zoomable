@@ -81,18 +81,26 @@ export class SelectedElement extends PureComponent {
             animatedStyle,
         ];
 
-        const overlayElement = selected.element.props.children;
-        const videoElement = overlayElement.props.children;
+        let children = null;
 
-        const video = React.cloneElement(videoElement, {...videoElement.props, isMuted: true, isHidden: true});
-        const overlay = React.cloneElement(overlayElement, {...overlayElement.props}, [video]);
+        if  (selected && selected.element && selected.element.props && selected.element.props.children) {
+            children = {...selected.element.props.children};
+            if (children.props.children.props.videoURI) {
+
+                const overlayElement = selected.element.props.children;
+                const videoElement = overlayElement.props.children;
+
+                const video = React.cloneElement(videoElement, {...videoElement.props, key: "1", isMuted: true, isHidden: true, startTime: videoElement.props.progress.currentTime}, [videoElement.props.children]);
+                children = React.cloneElement(overlayElement, {...overlayElement.props}, [video]);
+            }
+        }
 
 
         return (
             <View style={styles.root}>
                 { renderBackground(selected, scaleValue, gesturePosition) }
                 <Animated.View style={elementStyle}>
-                    { overlay }
+                    { children }
                 </Animated.View>
             </View>
         );

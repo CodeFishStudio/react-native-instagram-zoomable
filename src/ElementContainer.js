@@ -201,6 +201,8 @@ export class ElementContainer extends PureComponent {
         let selectedMeasurement = await this._measureSelected();
         this._selectedMeasurement = selectedMeasurement;
 
+        const AJUSTMENT = Platform.OS !== 'ios' ? 40 : 0;
+
         // set to initial position and scale
         Animated.parallel([
             Animated.timing(gesturePosition.x, {
@@ -210,7 +212,7 @@ export class ElementContainer extends PureComponent {
                 useNativeDriver: true,
             }),
             Animated.timing(gesturePosition.y, {
-                toValue: (this._selectedMeasurement && this._selectedMeasurement.y) || 0,
+                toValue: (this._selectedMeasurement && this._selectedMeasurement.y + AJUSTMENT) || 0,
                 duration: RESTORE_ANIMATION_DURATION,
                 easing: Easing.bezier(0.645, 0.045, 0.355, 1),
                 useNativeDriver: true,
